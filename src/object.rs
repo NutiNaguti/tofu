@@ -7,6 +7,7 @@ pub struct Object<'a> {
     height: u8,
     color: &'a mut dyn Color,
     position: Vector,
+    content: Vec<Vec<String>>,
 }
 
 impl<'a> Object<'a> {
@@ -44,12 +45,19 @@ impl<'a> Object<'a> {
         }
     }
 
-    pub fn new(width: u8, height: u8, color: &'a mut color::Rgb, position: Vector) -> Object {
+    pub fn new(
+        width: u8,
+        height: u8,
+        color: &'a mut color::Rgb,
+        position: Vector,
+        content: Vec<Vec<String>>,
+    ) -> Object<'a> {
         Object {
             width,
             height,
             color,
             position: Vector::zero(),
+            content,
         }
     }
 }

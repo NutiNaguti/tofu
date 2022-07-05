@@ -8,7 +8,7 @@ pub struct Vector {
 
 impl Vector {
     pub fn new(x: u8, y: u8) -> Vector {
-        Vector { x: x, y: y }
+        Vector { x, y }
     }
 
     pub fn zero() -> Vector {
