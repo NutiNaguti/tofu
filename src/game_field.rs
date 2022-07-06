@@ -1,35 +1,56 @@
+use std::{usize, vec};
+
 use crate::{object::Object, vector::Vector};
 
-pub struct GameField<'a> {
+pub struct GameField {
     width: u8,
     height: u8,
-    objects: Vec<Object<'a>>,
-    content: Vec<Vec<String>>,
+    objects: Vec<Object>,
+    content: Vec<Vec<char>>,
 }
 
-impl<'a, 'b, 'c> GameField<'a> {
-    pub fn create_game_field(x: u8, y: u8) -> GameField<'a> {
+impl<'a, 'b, 'c> GameField {
+    pub fn new(x: u8, y: u8) -> GameField {
+        let content: Vec<Vec<char>> = vec![vec![' '; x as usize]; y as usize];
+
         GameField {
             width: x,
             height: y,
             objects: Vec::new(),
-            content: Vec::from(Vec::new()),
+            content,
         }
     }
 
-    pub fn content(&self) -> &Vec<Vec<String>> {
-        let content = String::new();
-
+    pub fn content(&self) -> &Vec<Vec<char>> {
         &self.content
     }
 
-    pub fn add_object(&mut self, object: Object<'a>) {
-        // self.objects.push(object);
-        // let content = String::new();
-        // let
-        //
+    pub fn add_object(&mut self, object: Object) {
+        if object.height() >= self.height {
+            return;
+        }
+        if object.width() >= self.width {
+            return;
+        }
+        let mut new_content: Vec<Vec<char>> = self.content.clone();
+        let mut y = usize::from(object.position().y);
+        let mut x = usize::from(object.position().x);
 
-        // self.update_content(&content);
+        let _x = x.clone();
+        let _y = y.clone();
+
+        for (i, e) in object.content().iter().enumerate() {
+            for (j, el) in e.iter().enumerate() {
+                // println!("x: {:?}\ty: {:?}", x, y);
+                new_content[y][x] = el.clone();
+                x = x + 1;
+            }
+            new_content[i].push('\n');
+            y = y + 1;
+            x = _x;
+        }
+
+        self.content = new_content;
     }
 
     fn update_content(&mut self, content: &str) {}

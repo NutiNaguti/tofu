@@ -5,9 +5,9 @@ pub struct AssetStorage<'a, 'b> {
     pub assets: Vec<&'a Asset<'b>>,
 }
 
-pub struct Asset<'a> {
-    pub name: &'a str,
-    pub path: &'a str,
+pub struct Asset<'c> {
+    pub name: &'c str,
+    pub path: &'c str,
     pub content: Vec<Vec<char>>,
 }
 
@@ -17,7 +17,7 @@ fn parse_from_file(path: &str) -> Result<String, ex::io::Error> {
     file_content
 }
 
-impl<'a> Asset<'a> {
+impl<'c> Asset<'c> {
     pub fn new(path: &str) -> Asset {
         let (_, name) = path.split_once("/").unwrap();
         let raw_content = parse_from_file(path).unwrap_or_else(|err| {
@@ -39,6 +39,15 @@ impl<'a> Asset<'a> {
             content,
         }
     }
+
+    pub fn width(&self) -> u8 {
+        self.content.len() as u8
+    }
+
+    //TODO
+    pub fn height(&self) -> u8 {
+        self.content[0].len() as u8
+    }
 }
 
 impl<'a, 'b> AssetStorage<'a, 'b> {
@@ -46,15 +55,17 @@ impl<'a, 'b> AssetStorage<'a, 'b> {
         AssetStorage { assets: Vec::new() }
     }
 
-    pub fn add_to_storage(&mut self, asset: &'a Asset<'b>) {
+    pub fn add(&mut self, asset: &'a Asset<'b>) {
         self.assets.push(asset);
     }
 
-    // pub fn get_asset_by_name(&self, name: &str) -> &Asset {
-    //     for (i, e) in self.assets.iter().enumerate() {
-    //         if e. == name {
-    //             return &e;
-    //         }
-    //     }
-    // }
+    pub fn get_asset_by_name(&self, name: &str) -> Option<&Asset<'_>> {
+        for e in &self.assets {
+            if e.name == name {
+                return Some(e);
+            }
+        }
+
+        return None;
+    }
 }

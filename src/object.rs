@@ -1,16 +1,22 @@
-use crate::{direction::Direction, vector::Vector};
-use termion::color::{self, Color};
+use crate::{
+    asset::{Asset, AssetStorage},
+    direction::Direction,
+    vector::Vector,
+};
+use termion::color::{self, Rgb};
 
 #[derive(Debug)]
-pub struct Object<'a> {
+pub struct Object {
     width: u8,
     height: u8,
-    color: &'a mut dyn Color,
+    color: Rgb,
     position: Vector,
-    content: Vec<Vec<String>>,
+    content: Vec<Vec<char>>,
 }
 
-impl<'a> Object<'a> {
+const WHITE: Rgb = color::Rgb(255u8, 255u8, 255u8);
+
+impl<'a> Object {
     pub fn x(&self) -> u8 {
         self.position.x
     }
@@ -27,13 +33,21 @@ impl<'a> Object<'a> {
         self.height
     }
 
-    pub fn color(&self) -> &dyn Color {
-        self.color
+    pub fn color(&self) -> &Rgb {
+        &self.color
     }
 
-    pub fn set_color_rgb(&mut self, new_color: &'a mut color::Rgb) {
-        self.color = new_color;
+    pub fn content(&self) -> &Vec<Vec<char>> {
+        &self.content
     }
+
+    pub fn position(&self) -> &Vector {
+        &self.position
+    }
+
+    // pub fn set_color_rgb(&mut self, new_color: &'a mut color::Rgb) {
+    //     self.color = new_color;
+    // }
 
     pub fn move_to(&mut self, direction: &Direction) {
         match direction {
@@ -48,16 +62,47 @@ impl<'a> Object<'a> {
     pub fn new(
         width: u8,
         height: u8,
-        color: &'a mut color::Rgb,
+        color: Rgb,
         position: Vector,
-        content: Vec<Vec<String>>,
-    ) -> Object<'a> {
+        content: Vec<Vec<char>>,
+    ) -> Object {
         Object {
             width,
             height,
             color,
-            position: Vector::zero(),
+            position,
             content,
         }
+    }
+
+    //TODO
+    pub fn create_from_asset_storage(
+        storage: &AssetStorage,
+        name: &str,
+        position: Vector,
+    ) -> Option<Object> {
+        let result = storage
+            .get_asset_by_name(name)
+            .expect("create_from_asset_storage error");
+        let result = Some(Object::new(
+            result.width(),
+            result.height(),
+            WHITE,
+            position,
+            result.content.clone(),
+        ));
+
+        // let assets = storage.get_asset_by_name(name);
+        // let mut color = color::Rgb(0u8, 0u8, 0u8);
+        // let assets = assets.into_iter().map(|x| {
+        //     result.push(Object::new(
+        //         x.width().clone(),
+        //         x.height().clone(),
+        //         &mut color,
+        //         Vector::zero(),
+        //         x.content.clone(),
+        //     ))
+        // });
+        result
     }
 }
